@@ -310,7 +310,7 @@ fn current_rss_kb() -> u64 {
         .ok()
         .and_then(|p| p.statm().ok())
         .map(|m| {
-            let page_size = procfs::page_size().unwrap_or(4096) as u64;
+            let page_size = procfs::page_size();
             m.resident * page_size / 1024
         })
         .unwrap_or(0)
