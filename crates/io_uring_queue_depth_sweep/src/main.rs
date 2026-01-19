@@ -84,6 +84,8 @@ struct RunCfg {
     use_fixed: bool,
     /// Pre-allocate the file to `file_len` before writing.
     preallocate: Option<bool>,
+    /// Attempt to drop page cache between queue depths for buffered I/O.
+    drop_caches: Option<bool>,
     /// Queue depths to test. Each value must be > 0.
     qds: Vec<usize>,
     /// Ring size override. Defaults to next power of 2 >= max(qds) * 2.
@@ -201,15 +203,15 @@ fn run_sweep(cfg: &RunCfg) -> Result<Vec<ResultRow>> {
     if cfg.file_len == 0 {
         bail!("file_len must be > 0");
     }
-    if cfg.file_len % cfg.buf_size as u64 != 0 {
+    if !cfg.file_len.is_multiple_of(cfg.buf_size as u64) {
         bail!("file_len must be a multiple of buf_size");
     }
-    if cfg.qds.iter().any(|&qd| qd == 0) {
+    if cfg.qds.contains(&0) {
         bail!("queue depths must be > 0");
     }
 
     let alignment = direct_alignment(cfg.direct);
-    if cfg.direct && cfg.buf_size % alignment != 0 {
+    if cfg.direct && !cfg.buf_size.is_multiple_of(alignment) {
         bail!(
             "buf_size must be a multiple of alignment for O_DIRECT (alignment={})",
             alignment
@@ -217,6 +219,14 @@ fn run_sweep(cfg: &RunCfg) -> Result<Vec<ResultRow>> {
     }
     if cfg.iopoll && !cfg.direct {
         bail!("iopoll requires direct=true");
+    }
+
+    let drop_caches = cfg.drop_caches.unwrap_or(false);
+    if !cfg.direct && cfg.qds.len() > 1 && !drop_caches {
+        eprintln!(
+            "warning: direct=false with multiple queue depths warms the page cache; \
+             consider direct=true or drop_caches=true for comparable results"
+        );
     }
 
     let max_qd = *cfg.qds.iter().max().unwrap();
@@ -378,6 +388,15 @@ fn run_sweep(cfg: &RunCfg) -> Result<Vec<ResultRow>> {
             p99_ms: p99,
             errors,
         });
+
+        if drop_caches && !cfg.direct {
+            if cfg.write {
+                if let Err(err) = file.sync_all() {
+                    eprintln!("warning: sync_all before drop_caches failed: {}", err);
+                }
+            }
+            drop_file_cache(fd);
+        }
     }
 
     Ok(rows)
@@ -472,5 +491,14 @@ fn direct_alignment(direct: bool) -> usize {
         page as usize
     } else {
         4096
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn drop_file_cache(fd: i32) {
+    // SAFETY: posix_fadvise is safe to call with a valid fd. len=0 means "to EOF".
+    let ret = unsafe { libc::posix_fadvise(fd, 0, 0, libc::POSIX_FADV_DONTNEED) };
+    if ret != 0 {
+        eprintln!("warning: posix_fadvise(DONTNEED) failed: {}", ret);
     }
 }

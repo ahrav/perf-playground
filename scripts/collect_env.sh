@@ -32,7 +32,13 @@ if [[ -z "$OUT" ]]; then
   exit 1
 fi
 
-python3 - <<'PY' "$OUT"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(git -C "$SCRIPT_DIR/.." rev-parse --show-toplevel 2>/dev/null || true)"
+if [[ -z "$REPO_ROOT" ]]; then
+  REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+fi
+
+python3 - <<'PY' "$OUT" "$REPO_ROOT"
 import json
 import platform
 import subprocess
@@ -41,7 +47,7 @@ import time
 from pathlib import Path
 
 out_path = sys.argv[1]
-repo_root = Path(__file__).resolve().parents[1]
+repo_root = Path(sys.argv[2]).resolve() if len(sys.argv) > 2 and sys.argv[2] else Path.cwd()
 
 
 def cmd(cmd, cwd=None):

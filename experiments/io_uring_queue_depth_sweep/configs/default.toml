@@ -10,6 +10,9 @@ write = false
 # For O_DIRECT, buf_size and offsets must be aligned to the device block size.
 direct = false
 
+# Attempt to drop page cache between queue depths for buffered I/O.
+drop_caches = false
+
 # io_uring knobs
 sqpoll = false
 iopoll = false

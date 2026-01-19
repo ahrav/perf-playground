@@ -44,5 +44,6 @@ python3 ./experiments/io_uring_queue_depth_sweep/parse.py --in ./experiments/io_
 ## Caveats
 
 - O_DIRECT requires aligned buffers and offsets; ensure `buf_size` is a multiple of the device block size.
+- Buffered runs (`direct = false`) warm the page cache across queue depths; use `direct = true` or `drop_caches = true` for more comparable results.
 - SQPOLL requires elevated privileges or configured `memlock` limits.
 - Results are sensitive to CPU governor, thermal throttling, and filesystem mount options.
