@@ -1,0 +1,25 @@
+# Paths and sizes are in bytes.
+path = "/mnt/nvme/testfile"
+buf_size = 262144
+file_len = 4294967296
+
+# true = write, false = read
+write = false
+
+# true enables O_DIRECT
+# For O_DIRECT, buf_size and offsets must be aligned to the device block size.
+direct = false
+
+# io_uring knobs
+sqpoll = false
+iopoll = false
+use_fixed = false
+
+# Optional: preallocate file_len before writes
+preallocate = false
+
+# Queue depths to sweep
+qds = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+
+# io_uring submission queue entries (power of two)
+ring_entries = 2048

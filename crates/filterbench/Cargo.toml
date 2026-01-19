@@ -1,0 +1,22 @@
+[package]
+name = "filterbench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+bloomfilter = "3"
+clap = { version = "4", features = ["derive"] }
+criterion = "0.5"
+csv = "1"
+rand = "0.8"
+rand_pcg = "0.3"
+rayon = "1"
+scalable_bloom_filter = "0.1.1"
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+xorf = "0.12"
+xorfilter = { package = "xorfilter-rs", version = "0.5" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+procfs = "0.18"
