@@ -1,0 +1,3 @@
+- buf_ring requires kernel >= 5.19 and sufficient memlock.
+- Consider pinning CPUs and fixing governor for stable runs.
+- Ensure the testfile lives on the target device and is large enough to avoid cache artifacts.
