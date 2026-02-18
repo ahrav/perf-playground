@@ -1,0 +1,3 @@
+cmd: hashbench --config default.toml --out results/2026-02-18_b0f1d8752aba
+git_commit: a921d30e70a49b8cfbc7d429934d06bd77a3dd0d
+rustc: rustc 1.93.1 (01f6ddf75 2026-02-11)

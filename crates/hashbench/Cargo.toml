@@ -1,0 +1,29 @@
+[package]
+name = "hashbench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ahash = "0.8"
+anyhow = "1"
+blake3 = "1"
+clap = { version = "4", features = ["derive"] }
+crc32fast = "1"
+criterion = "0.5"
+csv = "1"
+foldhash = "0.1"
+highway = "1"
+rand = "0.8"
+rand_pcg = "0.3"
+serde = { version = "1", features = ["derive"] }
+siphasher = "1"
+toml = "0.8"
+wyhash = "0.5"
+xxhash-rust = { version = "0.8", features = ["xxh3"] }
+
+[target.'cfg(any(target_arch = "x86_64", target_arch = "aarch64"))'.dependencies]
+gxhash = "3"
+
+[[bench]]
+name = "hash_bench"
+harness = false

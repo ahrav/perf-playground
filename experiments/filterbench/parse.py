@@ -34,16 +34,23 @@ def read_rows(path):
     return rows
 
 
-def plot_bar(labels, values, out_path, ylabel):
+def save_fig(fig, out_path, formats):
+    """Save a figure in all requested formats."""
+    for fmt in formats:
+        p = out_path.with_suffix(f".{fmt}")
+        fig.savefig(p, dpi=160, format=fmt)
+
+
+def plot_bar(labels, values, out_path, ylabel, formats):
     import matplotlib.pyplot as plt
 
-    plt.figure(figsize=(8.0, 4.0))
+    fig = plt.figure(figsize=(8.0, 4.0))
     plt.bar(labels, values)
     plt.ylabel(ylabel)
     plt.xticks(rotation=20, ha="right")
     plt.grid(axis="y", linestyle="--", alpha=0.4)
     plt.tight_layout()
-    plt.savefig(out_path, dpi=160)
+    save_fig(fig, out_path, formats)
     plt.close()
 
 
@@ -51,7 +58,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--in", dest="input_csv", required=True)
     parser.add_argument("--out", dest="out_dir", required=True)
+    parser.add_argument(
+        "--format",
+        dest="formats",
+        default="png,svg",
+        help="Comma-separated output formats (default: png,svg)",
+    )
     args = parser.parse_args()
+    formats = [f.strip() for f in args.formats.split(",")]
 
     input_csv = Path(args.input_csv)
     out_dir = Path(args.out_dir)
@@ -66,20 +80,23 @@ def main():
     plot_bar(
         labels,
         [r["qps_single_pos"] for r in rows],
-        plots_dir / "qps_single_pos.png",
+        plots_dir / "qps_single_pos",
         "single-thread QPS (positives)",
+        formats,
     )
     plot_bar(
         labels,
         [r["qps_multi_pos"] for r in rows],
-        plots_dir / "qps_multi_pos.png",
+        plots_dir / "qps_multi_pos",
         "multi-thread QPS (positives)",
+        formats,
     )
     plot_bar(
         labels,
         [r["fp_rate"] for r in rows],
-        plots_dir / "fp_rate.png",
+        plots_dir / "fp_rate",
         "false positive rate",
+        formats,
     )
 
     best_single = max(rows, key=lambda r: r["qps_single_pos"])

@@ -1,0 +1,11 @@
+seed = 12648430
+input_sizes = [8, 16, 32, 64, 256, 512, 1024, 4096, 16384, 65536, 131072, 1048576]
+patterns = ["random", "low_entropy", "repeating"]
+min_time_ms = 1000
+warmup_iters = 100
+algorithms = []
+criterion = false
+criterion_sample_size = 100
+criterion_warmup_ms = 500
+criterion_measurement_secs = 3
+criterion_plots = false
