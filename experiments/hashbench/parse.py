@@ -124,17 +124,27 @@ def main():
     for pattern in patterns:
         plot_throughput(rows, pattern, plots_dir / f"throughput_{pattern}", formats)
 
-    # Plot 2: Latency bar charts at 64B and 4096B for each pattern.
+    # Plot 2: Latency bar charts at representative small and large sizes for each pattern.
+    # Pick the second-smallest and second-largest sizes when available, falling back to
+    # the smallest and largest so charts remain useful with fewer than 3 sizes.
+    latency_sizes = set()
+    if len(sizes) >= 3:
+        latency_sizes.add(sizes[1])   # second-smallest
+        latency_sizes.add(sizes[-2])  # second-largest
+    elif len(sizes) == 2:
+        latency_sizes.update(sizes)
+    elif sizes:
+        latency_sizes.add(sizes[0])
+
     for pattern in patterns:
-        for size in [64, 4096]:
-            if size in sizes:
-                plot_latency_bar(
-                    rows,
-                    pattern,
-                    size,
-                    plots_dir / f"latency_{size}B_{pattern}",
-                    formats,
-                )
+        for size in sorted(latency_sizes):
+            plot_latency_bar(
+                rows,
+                pattern,
+                size,
+                plots_dir / f"latency_{size}B_{pattern}",
+                formats,
+            )
 
     # Summary.
     repo_root = Path(__file__).resolve().parents[2]

@@ -220,7 +220,7 @@ mod crc32_impl {
 
     impl HashFn for Crc32Fast {
         fn name(&self) -> &'static str {
-            "crc32c"
+            "crc32"
         }
         fn hash_bytes(&self, input: &[u8]) -> u64 {
             crc32fast::hash(input) as u64

@@ -43,4 +43,4 @@ Each run writes:
 
 ## Algorithms
 
-blake3, blake3_keyed, highway, siphash13, siphash24, xxh3, xxh3_seeded, wyhash, crc32c, ahash, gxhash (x86_64/aarch64 only), foldhash
+blake3, blake3_keyed, highway, siphash13, siphash24, xxh3, xxh3_seeded, wyhash, crc32, ahash, gxhash (x86_64/aarch64 only), foldhash
