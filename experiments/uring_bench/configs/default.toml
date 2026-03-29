@@ -1,0 +1,12 @@
+path = "/mnt/nvme/testfile"
+
+iters = 50000
+warmup_secs = 5
+
+chunks = [4096, 8192, 65536]
+qds = [8, 64, 256]
+modes = ["readv", "reg", "bufring"]
+
+# Optional overrides:
+# ring_entries = 256
+# buf_ring_entries = 256

@@ -1,0 +1,14 @@
+[package]
+name = "uring_bench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+clap = { version = "4", features = ["derive"] }
+io-uring = "0.7.11"
+libc = "0.2"
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
